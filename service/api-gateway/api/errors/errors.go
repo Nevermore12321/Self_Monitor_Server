@@ -15,18 +15,21 @@ const (
 // http 请求的常见错误封装
 type HTTPError struct {
 	Code    int    `json:"code"`
+	Reason	string	`json:"reason"`
 	Message string `json:"message"`
 }
 
 //  错误的打印格式
 func (e *HTTPError) Error() string {
-	return fmt.Sprintf("HTTPError code: %d message: %s", e.Code, e.Message)
+	return fmt.Sprintf("{code: %d reason: %s message: %s}", e.Code, e.Reason, e.Message)
 }
+
 
 //  New 函数创建一个错误，需要传入三个参数：错误码，错误原因，和 message
 func New(code int, reason, message string) *HTTPError {
 	return &HTTPError{
 		Code: int(code),
+		Reason: reason,
 		Message: message,
 	}
 
@@ -63,7 +66,7 @@ func Code(err error) int {
 // 返回错误原因
 func Reason(err error) string {
 	if se := FromError(err); err != nil {
-		return se.Message
+		return se.Reason
 	}
 	return UnknownReason
 }

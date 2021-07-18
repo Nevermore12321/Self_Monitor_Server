@@ -3,8 +3,8 @@ package logic
 import (
 	"context"
 	"errors"
-	"github.com/dgrijalva/jwt-go"
 	userModel "github.com/Nevermore12321/Self_Monitor_Server/service/api-gateway/model/user_info"
+	"github.com/dgrijalva/jwt-go"
 	"strconv"
 	"strings"
 	"time"
@@ -31,6 +31,8 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) LoginLogic {
 
 func (l *LoginLogic) Login(req types.LoginReq) (*types.LoginReply, error) {
 	if len(strings.TrimSpace(req.Username)) == 0  || len(strings.TrimSpace(req.Password)) == 0 {
+		//dataErr := HttpError.GatewayTimeout("Bad Request", "参数错误")
+		//return nil, dataErr
 		return nil, errors.New("参数错误")
 	}
 
