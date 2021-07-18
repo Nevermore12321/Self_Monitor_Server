@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/dgrijalva/jwt-go"
-	userModel "guoshaohe.com/api_gateway_model/user_info"
+	userModel "github.com/Nevermore12321/Self_Monitor_Server/service/api-gateway/model/user_info"
 	"strconv"
 	"strings"
 	"time"
