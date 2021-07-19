@@ -6,6 +6,7 @@ import (
 	"github.com/tal-tech/go-zero/rest/httpx"
 
 	Herr "api/errors"
+	Gmiddleware "api/global-middleware"
 	"api/internal/config"
 	"api/internal/handler"
 	"api/internal/svc"
@@ -30,6 +31,9 @@ func main() {
 
 	// 自定义错误
 	httpx.SetErrorHandler(Herr.ErrHandler)
+
+	// 添加全局的 跨域访问 中间件
+	server.Use(Gmiddleware.CorssDomain)
 
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 	server.Start()
