@@ -3,15 +3,16 @@ package logic
 import (
 	"context"
 	"errors"
-	userModel "github.com/Nevermore12321/Self_Monitor_Server/service/api-gateway/model/user_info"
-	"github.com/dgrijalva/jwt-go"
 	"strconv"
 	"strings"
 	"time"
 
+	Herr "api/errors"
 	"api/internal/svc"
 	"api/internal/types"
 
+	userModel "github.com/Nevermore12321/Self_Monitor_Server/service/api-gateway/model/user_info"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/tal-tech/go-zero/core/logx"
 )
 
@@ -31,9 +32,9 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) LoginLogic {
 
 func (l *LoginLogic) Login(req types.LoginReq) (*types.LoginReply, error) {
 	if len(strings.TrimSpace(req.Username)) == 0  || len(strings.TrimSpace(req.Password)) == 0 {
-		//dataErr := HttpError.GatewayTimeout("Bad Request", "参数错误")
-		//return nil, dataErr
-		return nil, errors.New("参数错误")
+		BadReqErr := Herr.BadRequest("Bad Request", "参数错误")
+		return nil, BadReqErr
+		//return nil, errors.New("参数错误")
 	}
 
 	// 根据用户名，查询数据库或者 redis 缓存
@@ -41,13 +42,15 @@ func (l *LoginLogic) Login(req types.LoginReq) (*types.LoginReply, error) {
 	switch err {
 	case nil:
 	case userModel.ErrNotFound:
-		return nil, errors.New("用户名不存在")
+		BadReqErrForUsername := Herr.BadRequest("Bad Request", "用户名不存在")
+		return nil, BadReqErrForUsername
 	default:
 		return nil, err
 	}
 
 	// 判断密码
 	if userInfo.Password != req.Password {
+
 		return nil, errors.New("用户密码不正确")
 	}
 
@@ -55,18 +58,19 @@ func (l *LoginLogic) Login(req types.LoginReq) (*types.LoginReply, error) {
 	now := time.Now().Unix()
 	accessExpire := l.svcCtx.Config.Auth.AccessExpire
 	accessSecret := l.svcCtx.Config.Auth.AccessSecret
-	userId_int64, err := strconv.ParseInt(userInfo.Userid, 10, 64)
+	useridInt64, err := strconv.ParseInt(userInfo.Userid, 10, 64)
 	if err != nil {
 		return nil, err
 	}
-	jwtToken, err := l.getJwtToken(accessSecret, now, accessExpire, userId_int64)
+	jwtToken, err := l.getJwtToken(accessSecret, now, accessExpire, useridInt64)
 	if err != nil {
 		return nil, err
 	}
 
+	time.Sleep(1 * time.Second)
 	return &types.LoginReply{
 		Id:           userInfo.Id,
-		UserName:         userInfo.Username,
+		UserName:     userInfo.Username,
 		UserId:       userInfo.Userid,
 		AccessToken:  jwtToken,
 		AccessExpire: now + accessExpire,

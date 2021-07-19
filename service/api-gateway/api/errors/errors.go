@@ -19,6 +19,14 @@ type HTTPError struct {
 	Message string `json:"message"`
 }
 
+//  http 的错误相应
+type HTTPErrorResponse struct {
+	Code    int    `json:"code"`
+	Reason	string	`json:"reason"`
+	Message string `json:"message"`
+}
+
+
 //  错误的打印格式
 func (e *HTTPError) Error() string {
 	return fmt.Sprintf("{code: %d reason: %s message: %s}", e.Code, e.Reason, e.Message)
@@ -69,4 +77,13 @@ func Reason(err error) string {
 		return se.Reason
 	}
 	return UnknownReason
+}
+
+// 错误响应格式：
+func (e *HTTPError) ErrData() *HTTPErrorResponse {
+	return &HTTPErrorResponse{
+		Code: e.Code,
+		Reason: e.Reason,
+		Message: e.Message,
+	}
 }

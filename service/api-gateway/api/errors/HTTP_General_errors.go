@@ -1,7 +1,5 @@
 package errors
 
-
-
 // BadRequest 400
 func BadRequest(reason, message string) *HTTPError {
 	return Newf(400, reason, message)
