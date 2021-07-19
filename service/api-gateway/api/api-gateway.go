@@ -3,7 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/tal-tech/go-zero/rest/httpx"
 
+	Herr "api/errors"
 	"api/internal/config"
 	"api/internal/handler"
 	"api/internal/svc"
@@ -25,6 +27,9 @@ func main() {
 	defer server.Stop()
 
 	handler.RegisterHandlers(server, ctx)
+
+	// 自定义错误
+	httpx.SetErrorHandler(Herr.ErrHandler)
 
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 	server.Start()
